@@ -17,11 +17,15 @@ class Command:
     def folding_panel_init(self, ed: Editor):
         self.h_pf = ed.get_prop(PROP_HANDLE_PARENT)
         colors = app_proc(PROC_THEME_UI_DICT_GET, '')
-        if self.h_pf not in self.indexes.keys():
+        if self.h_pf not in self.indexes:
             self.n_sbf = dlg_proc(self.h_pf, DLG_CTL_ADD, 'statusbar')
             self.h_sbf = dlg_proc(self.h_pf, DLG_CTL_HANDLE, index=self.n_sbf)
             position_ = ALIGN_TOP if self.position == 'top' else ALIGN_BOTTOM
-            dlg_proc(self.h_pf, DLG_CTL_PROP_SET, index=self.n_sbf, prop={'color':colors['EdTextBg']['color'],'align':position_})
+
+            h = app_proc(PROC_GET_GUI_HEIGHT, 'edit') or 22
+            h = max(h + 6, 24)   # a bit extra room so text is not clipped
+            dlg_proc(self.h_pf, DLG_CTL_PROP_SET, index=self.n_sbf, prop={'color':colors['EdTextBg']['color'],'align':position_, 'h': h,})
+            statusbar_proc(self.h_sbf, STATUSBAR_SET_COLOR_BORDER_BOTTOM, value=colors['SplitMain']['color'])
             self.indexes[self.h_pf] = self.h_sbf
         return self.indexes
 
